@@ -1,0 +1,57 @@
+<html>
+
+<head>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+</head>
+
+<body>
+    <h2>Fruits</h2>
+    <div id="fruitList"></div>
+    <form>
+        <h2>Add Fruit</h2>
+        <label>name</label>
+        <input name="fruit" />
+        <label>max price</label>
+        <input name="max" />
+        <button type="submit">Add Fruit</button>
+    </form>
+    <div class="error"></div>
+
+    <script>
+        $.ajax({
+            type: "GET",
+            url: "/fruitlist",
+        }).done(function(data) {
+            $("#fruitList").empty();
+            $("#fruitList").append($("<ul/>"));
+            var fruits = JSON.parse(data);
+            fruits.forEach(function(element) {
+                var fruit = element.name + ", max: " + element.max;
+                $("#fruitList ul").append($("<li/>").html(fruit));
+            });
+        });
+
+        $("#add").click(function() {
+            $.ajax({
+                type: "POST",
+                url: "/fruits/add",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    "name": $("input[name='fruit']").val(),
+                    "max": $("input[name='max']").val()
+                }),
+                success: function(msg) {
+                    console.log("success");
+                },
+                error: function(msg) {
+                    console.log("error");
+                },
+                complete: function(response, status) {
+                    $(".error").text(response.responseText.msg);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
